@@ -70,18 +70,18 @@ client_conn = context.socket(zmq.PUSH)
 client_conn.connect("tcp://127.0.0.1:1212")
 
 kinect_conn = context.socket(zmq.PULL)
-kinect_conn.connect("tcp://192.168.0.2:7777")
-#kinect_conn.connect("tcp://172.16.12.136:1213")
+#kinect_conn.connect("tcp://127.0.0.1:7777")
+kinect_conn.connect("tcp://127.0.0.1:1219")
 
 midi_conn = context.socket(zmq.PULL)
-midi_conn.connect("tcp://192.168.0.2:1250")
+midi_conn.connect("tcp://127.0.0.1:1250")
 
 pid_viz_conn = context.socket(zmq.PUSH)
 pid_viz_conn.connect("tcp://127.0.0.1:5123")
 
 ctrl_conn = context.socket(zmq.PULL)
 ctrl_conn.connect("tcp://127.0.0.1:5124")
-
+print "Connects done"
 yaw_sp = 0
 
 #r_pid = PID_RP(name="roll", P=30, I=0, D=10, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
@@ -129,6 +129,7 @@ rp_d = r_pid.Kd
 
 while True:
     try:
+        print "wait for data"
         data = kinect_conn.recv_json()
         #print "Got data"
         #data = kinect_conn.recv()
@@ -168,6 +169,7 @@ while True:
 
                 #midi_acc = (md["sliders"][3]-0.5)
         except zmq.error.Again:
+            print "zmq error"
             pass
 
         # Get the set-points (if there are any)
@@ -239,7 +241,7 @@ while True:
             else:
                  on_detect_counter += 1
         else:
-            #print "No detect"
+            print "No detect"
             cmd["ctrl"]["roll"] = 0
             cmd["ctrl"]["pitch"] = 0
             cmd["ctrl"]["thrust"] = 0
